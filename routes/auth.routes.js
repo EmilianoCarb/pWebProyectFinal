@@ -1,9 +1,10 @@
-import express from 'express';
-const router = express.Router();
+import { Router } from 'express';
+import { register, login } from '../controllers/auth.js';
 
-import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
-import jwt from 'jsonwebtoken';
+const router = Router();
 
-import db from '../lib/db.js';
-import userMiddleware from '../middleware/users.js';
+router.post('/register', register);
+
+router.post('/login', login);
+
+export default router;
