@@ -12,8 +12,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-app.use('/api/auth', authRoutes);       
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);    
+app.use('/auth', authRoutes);       
+app.use('/products', productRoutes);
+app.use('/orders', orderRoutes);    
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
