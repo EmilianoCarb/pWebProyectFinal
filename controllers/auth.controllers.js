@@ -20,7 +20,7 @@ export const register = async (req, res) =>
         const hashedPassword = await bcrypt.hash(password, 10);
         const id = uuidv4();
         await db.query(
-            'INSERT INTO users (id, email, password, role) VALUES (?,?,?,?',
+            'INSERT INTO users (id, email, password, role) VALUES (?,?,?,?)',
             [id,email, hashedPassword, 'client']
         );
         return res.status(201).json({ message: '¡Usuario registrado con éxito!' });
