@@ -37,7 +37,7 @@ export const login = async (req, res) => {
     try
     {   
         const [users] = await db.query(
-            'SELECT * FROM users WHERE username = ?' [email]
+            'SELECT * FROM users WHERE email = ?', [email]
         )
         if(users.length === 0 )
         {
