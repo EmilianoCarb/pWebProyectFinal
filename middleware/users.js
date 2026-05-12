@@ -34,16 +34,26 @@ const userMiddleware = {
             });
         }
     try {
+
+      if(!authorization.startsWith('Bearer '))
+      {
+            return res.status(401).send({
+                message: 'Formato de token incorrecto' 
+            });
+      }
       const token = authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.userData = decoded;
       next();
     } catch (err) {
-      return res.status(400).send({
-        message: 'Tu sesion no es valida',
-      });
+        if (err.name === 'TokenExpiredError'){ 
+             return res.status(400).send({
+               message: 'Tu sesion no es valida',
+             });    
+        }
+        return res.status(401).send({ message: 'Token inválido o corrupto' });
     }   
-    },
+},
     isAdmin: (req, res, next) => {
     if(req.userData && req.userData.role === 'admin')
     {
