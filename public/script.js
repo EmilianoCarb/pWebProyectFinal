@@ -1,8 +1,8 @@
 // Frontend en mismo origen que la API → URL base vacía
-const API = '';
+const API = 'http://localhost:5000';
 
-let token       = null;
-let userData    = null;
+let token    = localStorage.getItem('token');
+let userData = JSON.parse(localStorage.getItem('userData') || 'null');
 let cart        = [];
 let allProducts = [];
 let searchTimeout = null;
@@ -11,7 +11,7 @@ const $ = id => document.getElementById(id);
 
 /* ── UTILIDADES ── */
 function fmt(n) {
-  return Number(n).toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+  return Number(n).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 }
 
 function toast(msg, type = 'ok') {
@@ -31,7 +31,11 @@ function setAlert(id, msg, type = 'error') {
 async function apiFetch(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
-  const res  = await fetch(API + path, { ...opts, headers });
+  
+  const res = await fetch(API + path, {
+    ...opts,
+    headers
+  });
   const data = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, data };
 }
@@ -79,7 +83,7 @@ async function doRegister() {
   if (pass.length < 6) return setAlert('register-alert', 'Mínimo 6 caracteres.');
   const { ok, data } = await apiFetch('/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ email, password: pass })
+    body: JSON.stringify({ email, password: pass, password_repeat: pass2 })
   });
   if (!ok) return setAlert('register-alert', data.message || 'Error al registrarse.');
   setAlert('register-alert', '¡Cuenta creada! Iniciá sesión.', 'success');
@@ -136,6 +140,10 @@ async function loadProducts() {
   renderProducts(allProducts);
 }
 
+function getProduct(id) {
+  return allProducts.find(p => p.id === id);
+}
+
 function renderProducts(list) {
   if (!list.length) {
     $('products-container').innerHTML = `
@@ -160,10 +168,47 @@ function renderProducts(list) {
         <div class="qty-control">
           <button onclick="cartDec('${p.id}')">−</button>
           <span id="qty-${p.id}">${getCartQty(p.id)}</span>
-          <button onclick="cartInc(${JSON.stringify(p).replace(/</g,'&lt;')})">+</button>
+          <button onclick="cartInc('${p.id}')">+</button>
         </div>
         <button class="btn btn-primary btn-sm btn-full"
-          onclick="addToCart(${JSON.stringify(p).replace(/</g,'&lt;')})">
+          onclick="addToCart('${p.id}')">
+          🛒 Agregar al carrito
+        </button>
+      </div>`).join('')
+  }</div>`;
+}
+function getProduct(id) {
+  return allProducts.find(p => p.id === id);
+}
+
+function renderProducts(list) {
+  if (!list.length) {
+    $('products-container').innerHTML = `
+      <div class="empty-state">
+        <div class="big">🔍</div>
+        <h3>Sin resultados</h3>
+        <p>No encontramos productos que coincidan.</p>
+      </div>`;
+    return;
+  }
+  const icons = ['👕','👖','👟','🧥','🎒','🧣','🕶️','👒'];
+  $('products-container').innerHTML = `<div class="products-grid">${
+    list.map((p, i) => `
+      <div class="product-card">
+        <div class="product-icon">${icons[i % icons.length]}</div>
+        <div class="product-name">${esc(p.name)}</div>
+        <div class="product-desc">${esc(p.description || '—')}</div>
+        <div class="product-footer">
+          <span class="product-price">${fmt(p.price)}</span>
+          <span class="${stockChip(p.stock)}">${stockLabel(p.stock)}</span>
+        </div>
+        <div class="qty-control">
+          <button onclick="cartDec('${p.id}')">−</button>
+          <span id="qty-${p.id}">${getCartQty(p.id)}</span>
+          <button onclick="cartInc('${p.id}')">+</button>
+        </div>
+        <button class="btn btn-primary btn-sm btn-full"
+          onclick="addToCart('${p.id}')">
           🛒 Agregar al carrito
         </button>
       </div>`).join('')
@@ -188,8 +233,9 @@ function getCartQty(id) {
   const item = cart.find(c => c.product.id === id);
   return item ? item.qty : 0;
 }
-
-function addToCart(product) {
+function addToCart(productId) {
+  const product = getProduct(productId);
+  if (!product) return;
   if (product.stock <= 0) { toast('Sin stock disponible', 'err'); return; }
   const idx = cart.findIndex(c => c.product.id === product.id);
   if (idx >= 0) {
@@ -202,7 +248,9 @@ function addToCart(product) {
   toast(`${product.name} agregado 🛒`, 'ok');
 }
 
-function cartInc(product) { addToCart(product); }
+function cartInc(productId) {
+  addToCart(productId);
+}
 
 function cartDec(id) {
   const idx = cart.findIndex(c => c.product.id === id);
@@ -254,7 +302,7 @@ function renderCartPage() {
             </div>
             <div style="display:flex;align-items:center;gap:.6rem;margin-top:.4rem">
               <button class="btn btn-outline btn-sm"
-                onclick="cartDec('${c.product.id}');renderCartPage()">−</button>
+                onclick="cartInc('${c.product.id}');renderCartPage()">−</button>
               <span style="font-weight:700">${c.qty}</span>
               <button class="btn btn-outline btn-sm"
                 onclick="cartInc(${JSON.stringify(c.product).replace(/</g,'&lt;')});renderCartPage()">+</button>
@@ -314,7 +362,7 @@ async function loadOrders() {
           <div class="order-head">
             <div>
               <div class="order-id"># ${o.id}</div>
-              <div class="order-date">${new Date(o.created_at).toLocaleString('es-AR')}</div>
+              <div class="order-date">${new Date(o.created_at).toLocaleString('es-MX')}</div>
             </div>
             <span class="order-total">${fmt(o.total)}</span>
           </div>
@@ -431,3 +479,9 @@ async function saveProduct() {
   toast(id ? 'Producto actualizado ✅' : 'Producto creado ✅', 'ok');
   loadAdminProducts();
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (token && userData) {
+    enterApp();
+  }
+});

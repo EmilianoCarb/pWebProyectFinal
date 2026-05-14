@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import db from '../lib/db.js';
 
-// GET /orders
 export const getMyOrders = async (req, res) => {
     const userId = req.userData.userId;
     try {
@@ -26,7 +25,6 @@ export const getMyOrders = async (req, res) => {
     }
 };
 
-// POST /orders
 export const createOrder = async (req, res) => {
     const userId = req.userData.userId;
     const { items } = req.body;
@@ -95,6 +93,7 @@ export const createOrder = async (req, res) => {
     } catch (error) {
         await connection.rollback();
         connection.release();
+        console.error('Error de createOrder', error);
         return res.status(500).json({ message: 'Error al crear pedido', error: error.message });
     }
 };
