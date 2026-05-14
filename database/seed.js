@@ -19,16 +19,15 @@ const seedProducts = async () => {
     if (existing.length > 0) return;
 
     const products = [
-        { name: 'Remera básica', description: 'Remera de algodón 100%', price: 2500, stock: 100 },
-        { name: 'Pantalón jean', description: 'Jean slim fit azul', price: 8900, stock: 50 },
-        { name: 'Zapatillas deportivas', description: 'Suela reforzada, talle 36-45', price: 15000, stock: 30 },
-        { name: 'Campera de abrigo', description: 'Resistente al agua, varios colores', price: 22000, stock: 20 },
-        { name: 'Gorra', description: 'Gorra con visera ajustable', price: 3500, stock: 75 },
-        { name: 'Medias deportivas', description: 'Pack x3 pares', price: 1800, stock: 200 },
-        { name: 'Bermuda', description: 'Bermuda de tela liviana', price: 5500, stock: 60 },
-        { name: 'Buzo con capucha', description: 'Algodón y poliéster, frisa por dentro', price: 12000, stock: 40 },
-    ];
-
+    { name: 'Playera básica', description: 'Playera de algodón 100%, varios colores', price: 199, stock: 100 },
+    { name: 'Pantalón de mezclilla', description: 'Mezclilla slim fit, azul clásico', price: 699, stock: 50 },
+    { name: 'Tenis deportivos', description: 'Suela reforzada, tallas 24-30', price: 1299, stock: 30 },
+    { name: 'Chamarra ligera', description: 'Resistente al viento, varios colores', price: 1599, stock: 25 },
+    { name: 'Gorra bordada', description: 'Gorra con visera curva ajustable', price: 249, stock: 80 },
+    { name: 'Calcetines deportivos', description: 'Pack de 3 pares, algodón con elastán', price: 149, stock: 200 },
+    { name: 'Bermuda cargo', description: 'Tela ligera con bolsillos laterales', price: 449, stock: 60 },
+    { name: 'Sudadera con capucha', description: 'Algodón y poliéster, interior afelpado', price: 899, stock: 40 },
+];
     for (const p of products) {
         const id = uuidv4();
         await db.query(
