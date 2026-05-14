@@ -1,11 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
 import authRoutes from './routes/auth.routes.js';
 import productRoutes from './routes/products.routes.js';
 import orderRoutes from './routes/orders.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,9 +18,12 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
+app.use(express.static(join(__dirname, 'public')));
+
+
 app.use('/auth', authRoutes);       
 app.use('/admin', adminRoutes);
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);    
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor corriendo en el puerto: ${PORT}`));
