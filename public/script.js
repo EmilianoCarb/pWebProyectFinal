@@ -141,8 +141,11 @@ async function loadProducts() {
 }
 
 function getProduct(id) {
-  return allProducts.find(p => p.id === id);
+  function getProduct(id) {
+  return allProducts.find(p => p.id === id) 
+      || cart.find(c => c.product.id === id)?.product;
 }
+}0
 
 function renderProducts(list) {
   if (!list.length) {
@@ -248,9 +251,20 @@ function addToCart(productId) {
   toast(`${product.name} agregado 🛒`, 'ok');
 }
 
-function cartInc(productId) {
-  addToCart(productId);
+function cartInc(id) {
+  const product = getProduct(id);
+  if (!product) return;
+  const idx = cart.findIndex(c => c.product.id === id);
+  if (idx >= 0) {
+    if (cart[idx].qty >= product.stock) { toast('Stock máximo alcanzado', 'err'); return; }
+    cart[idx].qty++;
+  } else {
+    cart.push({ product, qty: 1 });
+  }
+  updateCartUI(id);
+  renderCartPage();
 }
+
 
 function cartDec(id) {
   const idx = cart.findIndex(c => c.product.id === id);
@@ -258,6 +272,7 @@ function cartDec(id) {
   cart[idx].qty--;
   if (cart[idx].qty <= 0) cart.splice(idx, 1);
   updateCartUI(id);
+  renderCartPage();
 }
 
 function removeFromCart(id) {
@@ -302,10 +317,10 @@ function renderCartPage() {
             </div>
             <div style="display:flex;align-items:center;gap:.6rem;margin-top:.4rem">
               <button class="btn btn-outline btn-sm"
-                onclick="cartInc('${c.product.id}');renderCartPage()">−</button>
+                onclick="cartDec('${c.product.id}')">−</button>
               <span style="font-weight:700">${c.qty}</span>
               <button class="btn btn-outline btn-sm"
-                onclick="cartInc(${JSON.stringify(c.product).replace(/</g,'&lt;')});renderCartPage()">+</button>
+                onclick="cartInc('${c.product.id}')">+</button>
             </div>
           </div>
         </div>`).join('')}
