@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tienda API</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══════════ AUTH ═══════════ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <h1>🛍️ Tienda Nemesio</h1>
+      <p>Traficando precios y estilo</p>
+    </div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchTab('login')">Iniciar sesión</div>
+      <div class="auth-tab" onclick="switchTab('register')">Registrarse</div>
+    </div>
+
+    <div id="tab-login">
+      <div id="login-alert"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="tu@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Entrar</button>
+    </div>
+
+    <div id="tab-register" class="hidden">
+      <div id="register-alert"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="tu@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="reg-pass" placeholder="••••••••" />
+      </div>
+      <div class="form-group">
+        <label>Confirmar contraseña</label>
+        <input type="password" id="reg-pass2" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter')doRegister()" />
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doRegister()">Crear cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app-screen" class="flex">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">🛍️ Tienda</div>
+    <div class="sidebar-user">
+      <small>Sesión activa</small>
+      <span id="sidebar-email"></span>
+      <div id="sidebar-badge" class="badge-admin hidden">Admin</div>
+    </div>
+    <nav>
+      <div class="nav-item active" data-page="products" onclick="navigate('products')">
+        <span class="nav-icon">📦</span> Productos
+      </div>
+      <div class="nav-item" data-page="cart" onclick="navigate('cart')">
+        <span class="nav-icon">🛒</span> Carrito
+        <span class="cart-badge" id="nav-cart-count">0</span>
+      </div>
+      <div class="nav-item" data-page="orders" onclick="navigate('orders')">
+        <span class="nav-icon">📋</span> Mis pedidos
+      </div>
+      <div id="admin-nav" class="hidden">
+        <div class="nav-sep">Administración</div>
+        <div class="nav-item" data-page="admin-products" onclick="navigate('admin-products')">
+          <span class="nav-icon">🗂️</span> Gestión productos
+        </div>
+        <div class="nav-item" data-page="admin-clients" onclick="navigate('admin-clients')">
+          <span class="nav-icon">👥</span> Clientes
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="btn btn-outline btn-full btn-sm" onclick="doLogout()">🚪 Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+    <!-- Productos -->
+    <div id="page-products">
+      <div class="page-header">
+        <div>
+          <h2>Productos</h2>
+          <p>Explorá nuestro catálogo y agregá al carrito</p>
+        </div>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="🔍  Buscar productos..." oninput="onSearch()" />
+        <button class="btn btn-outline" onclick="loadProducts()">Todos</button>
+      </div>
+      <div id="products-container">
+        <div class="loading-box"><div class="spinner"></div> Cargando…</div>
+      </div>
+    </div>
+
+    <!-- Carrito -->
+    <div id="page-cart" class="hidden">
+      <div class="page-header">
+        <div>
+          <h2>🛒 Carrito de compras</h2>
+          <p>Revisá tu pedido antes de confirmar</p>
+        </div>
+      </div>
+      <div id="cart-view"></div>
+    </div>
+
+    <!-- Pedidos -->
+    <div id="page-orders" class="hidden">
+      <div class="page-header">
+        <div>
+          <h2>📋 Mis pedidos</h2>
+          <p>Historial completo de tus compras</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="loadOrders()">↺ Actualizar</button>
+      </div>
+      <div id="orders-container">
+        <div class="loading-box"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- Admin: productos -->
+    <div id="page-admin-products" class="hidden">
+      <div class="page-header">
+        <div>
+          <h2>🗂️ Gestión de productos</h2>
+          <p>Creá, editá y administrá el inventario</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Nuevo producto</button>
+      </div>
+      <div id="admin-products-container">
+        <div class="loading-box"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- Admin: clientes -->
+    <div id="page-admin-clients" class="hidden">
+      <div class="page-header">
+        <div><h2>👥 Clientes registrados</h2></div>
+        <button class="btn btn-outline btn-sm" onclick="loadAdminClients()">↺ Actualizar</button>
+      </div>
+      <div id="admin-clients-container">
+        <div class="loading-box"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Nuevo producto</div>
+    <input type="hidden" id="modal-product-id" />
+    <div class="form-group">
+      <label>Nombre *</label>
+      <input type="text" id="modal-name" placeholder="Remera básica" />
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea id="modal-desc" placeholder="Detalles del producto…"></textarea>
+    </div>
+    <div class="flex gap-2">
+      <div class="form-group" style="flex:1">
+        <label>Precio *</label>
+        <input type="number" id="modal-price" placeholder="0.00" min="0" step="0.01" />
+      </div>
+      <div class="form-group" style="flex:1">
+        <label>Stock *</label>
+        <input type="number" id="modal-stock" placeholder="0" min="0" />
+      </div>
+    </div>
+    <div id="modal-alert"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
