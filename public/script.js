@@ -140,13 +140,6 @@ async function loadProducts() {
   renderProducts(allProducts);
 }
 
-function getProduct(id) {
-  function getProduct(id) {
-  return allProducts.find(p => p.id === id) 
-      || cart.find(c => c.product.id === id)?.product;
-}
-}0
-
 function renderProducts(list) {
   if (!list.length) {
     $('products-container').innerHTML = `
@@ -157,11 +150,9 @@ function renderProducts(list) {
       </div>`;
     return;
   }
-  const icons = ['👕','👖','👟','🧥','🎒','🧣','🕶️','👒'];
   $('products-container').innerHTML = `<div class="products-grid">${
     list.map((p, i) => `
       <div class="product-card">
-        <div class="product-icon">${icons[i % icons.length]}</div>
         <div class="product-name">${esc(p.name)}</div>
         <div class="product-desc">${esc(p.description || '—')}</div>
         <div class="product-footer">
@@ -182,40 +173,6 @@ function renderProducts(list) {
 }
 function getProduct(id) {
   return allProducts.find(p => p.id === id);
-}
-
-function renderProducts(list) {
-  if (!list.length) {
-    $('products-container').innerHTML = `
-      <div class="empty-state">
-        <div class="big">🔍</div>
-        <h3>Sin resultados</h3>
-        <p>No encontramos productos que coincidan.</p>
-      </div>`;
-    return;
-  }
-  const icons = ['👕','👖','👟','🧥','🎒','🧣','🕶️','👒'];
-  $('products-container').innerHTML = `<div class="products-grid">${
-    list.map((p, i) => `
-      <div class="product-card">
-        <div class="product-icon">${icons[i % icons.length]}</div>
-        <div class="product-name">${esc(p.name)}</div>
-        <div class="product-desc">${esc(p.description || '—')}</div>
-        <div class="product-footer">
-          <span class="product-price">${fmt(p.price)}</span>
-          <span class="${stockChip(p.stock)}">${stockLabel(p.stock)}</span>
-        </div>
-        <div class="qty-control">
-          <button onclick="cartDec('${p.id}')">−</button>
-          <span id="qty-${p.id}">${getCartQty(p.id)}</span>
-          <button onclick="cartInc('${p.id}')">+</button>
-        </div>
-        <button class="btn btn-primary btn-sm btn-full"
-          onclick="addToCart('${p.id}')">
-          🛒 Agregar al carrito
-        </button>
-      </div>`).join('')
-  }</div>`;
 }
 
 function stockChip(s)  { return s > 10 ? 'chip chip-green' : s > 0 ? 'chip chip-orange' : 'chip chip-red'; }
