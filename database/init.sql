@@ -28,7 +28,7 @@ CREATE TABLE orders (
 );
 
 CREATE TABLE order_items (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     order_id VARCHAR(36),
     product_id VARCHAR(36),
     quantity INT NOT NULL,
