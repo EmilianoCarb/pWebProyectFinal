@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.routes.js';
 import productRoutes from './routes/products.routes.js';
 import orderRoutes from './routes/orders.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import seed from './database/seed.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
@@ -20,6 +21,7 @@ app.use(cors());
 
 app.use(express.static(join(__dirname, 'public')));
 
+seed();
 
 app.use('/auth', authRoutes);       
 app.use('/admin', adminRoutes);
