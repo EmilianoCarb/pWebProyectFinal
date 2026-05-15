@@ -92,35 +92,33 @@ Al iniciar por primera vez se crean automáticamente:
 Abre el navegador en `http://localhost:5000`
 
 ## 📁 Estructura del Proyecto
-```text pWebProyecFinal/
-├── controllers/          # Lógica de negocio y manejo de peticiones
-│   ├── admin.controllers.js
-│   ├── auth.controllers.js
-│   ├── orders.controllers.js
-│   └── product.controllers.js
-├── database/             # Scripts de inicialización y datos de prueba
-│   ├── init.sql
-│   └── seed.js
-├── lib/                  # Clientes de bases de datos y utilidades compartidas
-│   └── db.js
-├── middleware/           # Middlewares de Express (Autenticación, validaciones)
-│   └── users.js
-├── public/               # Archivos estáticos del frontend
+```text
+pWebProyectFinal/
+├── controllers/
+│   ├── admin.controllers.js      # Listar clientes (solo admin)
+│   ├── auth.controllers.js       # Registro y login con JWT
+│   ├── orders.controllers.js     # Crear pedidos y consultar historial
+│   └── product.controllers.js   # CRUD de productos
+├── database/
+│   ├── init.sql                  # Esquema de tablas
+│   └── seed.js                   # Crea el admin y productos de ejemplo al iniciar
+├── lib/
+│   └── db.js                     # Pool de conexión MySQL
+├── middleware/
+│   └── users.js                  # Validación de token y rol admin
+├── public/
 │   ├── index.html
-│   ├── script.js
+│   ├── script.js                 # Lógica del frontend y consumo de la API
 │   └── style.css
-├── routes/               # Definición de rutas del servidor (End-points)
-│   ├── admin.routes.js
+├── routes/
+│   ├── admin.routes.js           # Rutas protegidas para administrador
 │   ├── auth.routes.js
 │   ├── orders.routes.js
 │   └── products.routes.js
-├── .env                  # Variables de entorno locales (Ignorado en Git)
-├── .env.example          # Plantilla de ejemplo para las variables de entorno
-├── .gitignore            # Archivos y carpetas excluidos del control de versiones
-├── index.js              # Punto de entrada principal de la aplicación
-├── package.json          # Dependencias y scripts del proyecto
-├── package-lock.json     # Historial exacto de versiones de las dependencias
-└── README.md             # Documentación del proyecto
+├── .env.example                  # Variables de entorno requeridas
+├── .gitignore
+├── index.js                      # Punto de entrada del servidor
+└── package.json
 ```
 ## 🔌 Endpoints de la API
 
